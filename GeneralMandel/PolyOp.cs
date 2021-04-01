@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Dynamic;
 using System.Text;
@@ -119,7 +120,7 @@ namespace GeneralMandel
                         }
                         if(pin.coeffs[az].cpow != 0)
                         val2 = cop.Multiply(cop.Pow(cvalplug, pin.coeffs[az].cpow),val2);
-
+                        
                         val2 = cop.Multiply(pin.coeffs[az], val2);
                         val1 = cop.Add(val1, val2);
                         
@@ -149,19 +150,23 @@ namespace GeneralMandel
                     
                 }
                 
-                doom[0] = ((double)255.0 * (double)curitt / (double)set.nitts);
-                doom[1] = 255.0;
-                doom[2] = 255.0;
+                doom[0] = 360.0*(curitt)/set.nitts;
+                
+                doom[1] = 1.0;
+                doom[2] = 1.0;
                 
                 if(set.nitts == curitt)
                 {
+
                     doom[2] = 0.0;
                 }
                 col = new ColorVo();
-                col.hue = (int)doom[0];
+                col.hue = (int)(doom[0]);
                 col.saturation = (int)doom[1];
                 col.value = (int)doom[2];
+                
                 Color max = ColorUtils.HsvToRgb(doom[0], doom[1], doom[2]);
+                
                 col.rgb = new int[3] { (int)(max.R), (int)(max.G), (int)(max.B) };
                 if (false)
                 {
@@ -169,7 +174,12 @@ namespace GeneralMandel
                     Console.WriteLine("HUE = " + col.hue + " SAT = " + col.saturation + " VALUE = " + col.value);
                     Console.WriteLine("R = " + col.rgb[0] + " G = " + col.rgb[1] + " B = " + col.rgb[2]);
                 }
-                    if (false)
+                if (col.hue > 20 && col.value != 0 && false)
+                {
+                    Console.WriteLine(col.hue + " " + col.saturation + " " + col.value);
+                    Console.WriteLine(col.rgb[0] + " " + col.rgb[1] + " " + col.rgb[2]);
+                }
+                if (false)
                 {
                     Console.WriteLine("NITTS: " + curitt);
                     Console.WriteLine(bvo);

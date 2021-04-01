@@ -40,6 +40,17 @@ namespace GeneralMandel
                 sets.Add(set);
             }
         }
+        public int GetIndexForGivenIndex(int indexin)
+        {
+            for(int ayy = 0; ayy < nsettingsfiles; ayy++)
+            {
+                if(sets[ayy].id == indexin)
+                {
+                    return ayy;
+                }
+            }
+            return 0;
+        }
         public string path;
         public List<Settings> sets;
         public void MakeJsons()

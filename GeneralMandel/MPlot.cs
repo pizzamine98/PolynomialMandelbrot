@@ -3,6 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Text;
+using System.ComponentModel;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Drawing.Imaging;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace GeneralMandel
 {
@@ -21,6 +28,30 @@ namespace GeneralMandel
         public TimeSpan dt;
         public DateTime starttime, endtime;
         public Stopwatch stopwatch;
+        
+        public Bitmap GetDataPicture(int w, int h, byte[] data)
+        {
+            Bitmap pic = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            int aria = 0;
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    
+                    
+                    Color c = Color.FromArgb(
+                       data[aria],
+                       data[aria + 1],
+                       data[aria + 2],
+                       data[aria + 3]
+                    );
+                    pic.SetPixel(y, x, c);
+                    aria += 4;
+                }
+            }
+
+            return pic;
+        }
         public void MakePoints()
         {
             stopwatch = new Stopwatch();
@@ -81,8 +112,12 @@ namespace GeneralMandel
 
         }
         public System.Random random;
-        public int nsteps,newind,dk,dl,ind,newl,newk,noutside,ninside,nop,nip,rindex;
+        public int nsteps,newind,dk,dl,ind,newl,newk,noutside,ninside,nop,nip,rindex,arind;
         public PolyOp opm;
+        
+        public byte[] coldata;
+
+        public Bitmap moopo;
         public void GoThrough()
         {
             opm.cvalplug = new Complex();
@@ -90,6 +125,9 @@ namespace GeneralMandel
             ind = 0;
             noutside = 0;
             ninside = 0;
+            coldata = new byte[nsteps * nsteps * 4];
+            
+            arind = 0;
             for (int ii = 0; ii < nsteps; ii++)
             {
                 if(true)
@@ -113,6 +151,7 @@ namespace GeneralMandel
                     {
                         noutside++;
                     }
+                    
                     points[ind].ittbreak = opm.curitt;
                     points[ind].zoomnum = zoomnum;
                     points[ind].cval = new Complex();
@@ -122,6 +161,12 @@ namespace GeneralMandel
                     points[ind].color.saturation = opm.col.saturation;
                     points[ind].color.value = opm.col.value;
                     points[ind].color.rgb = opm.col.rgb;
+                    coldata[arind+1] = (byte)points[ind].color.rgb[0];
+                    coldata[arind+2] = (byte)points[ind].color.rgb[1];
+                    coldata[arind+3] = (byte)points[ind].color.rgb[2];
+                    
+                    coldata[arind] = 255;
+                    arind += 4;
                     points[ind].neighbors = new List<int>();
                     points[ind].nneigh = 0;
                     for(int kk = 0; kk < 3; kk ++)
@@ -167,13 +212,15 @@ namespace GeneralMandel
                     if(false)
                     Console.WriteLine(points[ind].ittbreak + " " + points[ind].color.rgb[0] + " " + points[ind].color.rgb[1] + " " + points[ind].color.rgb[2] + " " + points[ind].inset);
                     curpos[0] += deltax;
+                   
                     ind++;
                 }
                 curpos[0] = starter[0];
                 curpos[1] += deltay;
             }
             nboundary = 0;
-            
+            moopo = GetDataPicture(nsteps, nsteps, coldata);
+            moopo.Save(@"C:\Users\Pizzamine98\Desktop\genmandel\plot" + zoomnum + ".jpeg",System.Drawing.Imaging.ImageFormat.Jpeg);
             for (int ii = 0; ii < nsteps*nsteps; ii++)
             {
                 nop = 0;
